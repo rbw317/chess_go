@@ -1,12 +1,12 @@
 package main
 
 import (
+	"chess_go/chess_engine"
 	"fmt"
-	"main/chess_engine"
 )
 
 func main() {
-	var board = chess_engine.Board{}
+	board := chess_engine.NewBoard()
 	board.InitBoard()
 	fmt.Println("Hello World!")
 }
