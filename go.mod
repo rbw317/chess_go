@@ -1,0 +1,1 @@
+module chess_go
