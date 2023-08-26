@@ -14,6 +14,16 @@ func NewQueen(pos BoardPosition, color PieceColor) *Queen {
 	return queen
 }
 
+func (queen *Queen) Copy() ChessPiece {
+	copyQueen := &Queen{}
+	copyQueen.Type = queen.Type
+	copyQueen.Color = queen.Color
+	copyQueen.CurrPosition = queen.CurrPosition
+	copyQueen.PrevPosition = queen.PrevPosition
+	copyQueen.MoveCount = queen.MoveCount
+	return copyQueen
+}
+
 func (queen *Queen) GetMoveCount() int {
 	return queen.MoveCount
 }
@@ -75,4 +85,8 @@ func (queen *Queen) GetType() PieceType {
 func (queen *Queen) Move(newPos BoardPosition) {
 	queen.CurrPosition = newPos
 	queen.MoveCount++
+}
+
+func (queen *Queen) GetValue() int {
+	return 9
 }

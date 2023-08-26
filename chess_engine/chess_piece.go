@@ -8,4 +8,6 @@ type ChessPiece interface {
 	GetType() PieceType
 	GetMoveCount() int
 	Move(position BoardPosition)
+	GetValue() int
+	Copy() ChessPiece
 }

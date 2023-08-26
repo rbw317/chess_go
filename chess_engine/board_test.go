@@ -232,3 +232,147 @@ func TestNewBoard(t *testing.T) {
 		t.Errorf("Error initialing board square H8")
 	}
 }
+
+func TestBoardScore(t *testing.T) {
+	board := NewBoard()
+	score := board.GetScore(White)
+	if score != 39 {
+		t.Errorf("Error! Board.GetScore function did not return 39 for white on initial board setup!")
+	}
+	score = board.GetScore(Black)
+	if score != 39 {
+		t.Errorf("Error! Board.GetScore function did not return 39 for black on initial board setup!")
+	}
+	board = &Board{}
+	board.Squares[D4] = Square{true, NewPawn(D4, White)}
+	board.Squares[E5] = Square{true, NewRook(E5, White)}
+	board.Squares[E3] = Square{true, NewKnight(E3, White)}
+	board.Squares[C5] = Square{true, NewBishop(C5, White)}
+	board.Squares[C3] = Square{true, NewQueen(C3, White)}
+	board.Squares[E4] = Square{true, NewKing(E4, White)}
+	board.Squares[F5] = Square{true, NewPawn(F5, Black)}
+	board.Squares[F6] = Square{true, NewPawn(F6, Black)}
+	board.Squares[A1] = Square{true, NewRook(A1, Black)}
+	board.Squares[A2] = Square{true, NewKnight(A2, Black)}
+	board.Squares[A3] = Square{true, NewBishop(A3, Black)}
+	board.Squares[A4] = Square{true, NewQueen(A4, Black)}
+	board.Squares[A5] = Square{true, NewKing(A5, Black)}
+
+	score = board.GetScore(White)
+	if score != 21 {
+		t.Errorf("Error! Board.GetScore function did not return 21 for white on random board setup!")
+	}
+	score = board.GetScore(Black)
+	if score != 22 {
+		t.Errorf("Error! Board.GetScore function did not return 22 for black on random board setup!")
+	}
+}
+
+func TestBoardGetKingPos(t *testing.T) {
+	board := NewBoard()
+	pos := board.GetKingPosition(White)
+	if pos != E1 {
+		t.Errorf("Error! Board.GetKingPosition function did not return E1 for white on initial board setup!")
+	}
+
+	pos = board.GetKingPosition(Black)
+	if pos != E8 {
+		t.Errorf("Error! Board.GetKingPosition function did not return E8 for black on initial board setup!")
+	}
+
+	board = &Board{}
+	board.Squares[D4] = Square{true, NewKing(D4, White)}
+	pos = board.GetKingPosition(White)
+	if pos != D4 {
+		t.Errorf("Error! Board.GetKingPosition function did not return D4 for white on random board setup!")
+	}
+
+	board = &Board{}
+	board.Squares[D5] = Square{true, NewKing(D5, Black)}
+	pos = board.GetKingPosition(Black)
+	if pos != D5 {
+		t.Errorf("Error! Board.GetKingPosition function did not return D5 for black on random board setup!")
+	}
+}
+
+func TestBoardGetAllMoves(t *testing.T) {
+	board := NewBoard()
+	moves := board.GetMoves(White)
+	if len(moves) != 20 {
+		t.Errorf("Error! Board.GetMoves for white function did not return 20 moves on initial board setup!")
+	}
+
+	moves = board.GetMoves(Black)
+	if len(moves) != 20 {
+		t.Errorf("Error! Board.GetMoves for black function did not return 20 moves on initial board setup!")
+	}
+}
+
+func TestBoardKingInCheck(t *testing.T) {
+	board := &Board{}
+	board.Squares[D4] = Square{true, NewKing(D4, White)}
+	board.Squares[D3] = Square{true, NewQueen(D3, Black)}
+
+	if !board.KingInCheck(White) {
+		t.Errorf("Error! Board.KingInCheck for white returned false when king IS in check!")
+	}
+}
+
+func TestBoardKingNotInCheck(t *testing.T) {
+	board := &Board{}
+	board.Squares[D4] = Square{true, NewKing(D4, White)}
+
+	if board.KingInCheck(White) {
+		t.Errorf("Error! Board.KingInCheck for white returned true when king IS NOT in check!")
+	}
+}
+
+func TestBoardValidMovePiece(t *testing.T) {
+	board := &Board{}
+	board.Squares[D4] = Square{true, NewKing(D4, White)}
+	move := NewMove(D4, D5)
+	res := board.MovePiece(move)
+	if !res.Result {
+		t.Errorf("Error! Board.MovePiece returned error for valid move!")
+	}
+}
+
+func TestBoardInvalidMovePiece(t *testing.T) {
+	board := &Board{}
+	board.Squares[D4] = Square{true, NewKing(D4, White)}
+	board.Squares[D5] = Square{true, NewPawn(D5, White)}
+	move := NewMove(D4, D5)
+	res := board.MovePiece(move)
+	if res.Result {
+		t.Errorf("Error! Board.MovePiece returned valid for invalid move!")
+	}
+
+	move = NewMove(A1, A2)
+	res = board.MovePiece(move)
+	if res.Result {
+		t.Errorf("Error! Board.MovePiece returned valid for invalid move!")
+	}
+}
+
+func TestBoardCheckMate(t *testing.T) {
+	board := &Board{}
+	board.Squares[E4] = Square{true, NewKing(E4, White)}
+	if board.CheckMate(White) {
+		t.Errorf("Error! Board.CheckMate for white returned true when king IS NOT in checkmate!")
+	}
+
+	board = &Board{}
+	board.Squares[A1] = Square{true, NewKing(A1, White)}
+	board.Squares[A3] = Square{true, NewQueen(A3, Black)}
+	if board.CheckMate(White) {
+		t.Errorf("Error! Board.CheckMate for white returned true when king IS NOT in checkmate!")
+	}
+
+	board = &Board{}
+	board.Squares[A1] = Square{true, NewKing(A1, White)}
+	board.Squares[A3] = Square{true, NewQueen(A3, Black)}
+	board.Squares[B3] = Square{true, NewQueen(B3, Black)}
+	if !board.CheckMate(White) {
+		t.Errorf("Error! Board.CheckMate for white returned false when king IS in checkmate!")
+	}
+}

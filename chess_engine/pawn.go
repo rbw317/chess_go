@@ -14,6 +14,16 @@ func NewPawn(pos BoardPosition, color PieceColor) *Pawn {
 	return pawn
 }
 
+func (pawn *Pawn) Copy() ChessPiece {
+	copyPawn := &Pawn{}
+	copyPawn.Type = pawn.Type
+	copyPawn.Color = pawn.Color
+	copyPawn.CurrPosition = pawn.CurrPosition
+	copyPawn.PrevPosition = pawn.PrevPosition
+	copyPawn.MoveCount = pawn.MoveCount
+	return copyPawn
+}
+
 func (pawn *Pawn) GetMoveCount() int {
 	return pawn.MoveCount
 }
@@ -143,4 +153,8 @@ func (pawn *Pawn) GetType() PieceType {
 func (pawn *Pawn) Move(newPos BoardPosition) {
 	pawn.CurrPosition = newPos
 	pawn.MoveCount++
+}
+
+func (pawn *Pawn) GetValue() int {
+	return 1
 }

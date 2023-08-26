@@ -14,6 +14,16 @@ func NewBishop(pos BoardPosition, color PieceColor) *Bishop {
 	return bishop
 }
 
+func (bishop *Bishop) Copy() ChessPiece {
+	copyBishop := &Bishop{}
+	copyBishop.Type = bishop.Type
+	copyBishop.Color = bishop.Color
+	copyBishop.CurrPosition = bishop.CurrPosition
+	copyBishop.PrevPosition = bishop.PrevPosition
+	copyBishop.MoveCount = bishop.MoveCount
+	return copyBishop
+}
+
 func (bishop *Bishop) GetMoveCount() int {
 	return bishop.MoveCount
 }
@@ -71,4 +81,8 @@ func (bishop *Bishop) GetType() PieceType {
 func (bishop *Bishop) Move(newPos BoardPosition) {
 	bishop.CurrPosition = newPos
 	bishop.MoveCount++
+}
+
+func (bishop *Bishop) GetValue() int {
+	return 3
 }

@@ -1,5 +1,22 @@
 package chess_engine
 
+type ErrorCode uint8
+
+const (
+	NO_ERROR ErrorCode = iota
+	INVALID_MOVE
+	ENGINE_CHECK_MATE
+	USER_CHECK_MATE
+	NOT_USER_MOVE
+	NOT_ENGINE_MOVE
+)
+
+type Result struct {
+	Result  bool
+	ResCode ErrorCode
+	ResStr  string
+}
+
 func GetRankFile(pos BoardPosition) (int, int) {
 	rank := -1
 	file := -1
@@ -203,6 +220,9 @@ func GetRankFile(pos BoardPosition) (int, int) {
 
 func GetBoardPos(rank int, file int) BoardPosition {
 	pos := INVALID_BOARD_POSITION
+	if rank < 0 || rank >= 8 || file < 0 || file >= 8 {
+		return pos
+	}
 	switch rank {
 	case 0:
 		switch file {
@@ -445,4 +465,12 @@ func MovesContainMove(move Move, moves []*Move) bool {
 	}
 
 	return retVal
+}
+
+func OppositeColor(color PieceColor) PieceColor {
+	if color == White {
+		return Black
+	}
+
+	return White
 }

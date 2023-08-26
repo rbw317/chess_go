@@ -14,6 +14,16 @@ func NewRook(pos BoardPosition, color PieceColor) *Rook {
 	return rook
 }
 
+func (rook *Rook) Copy() ChessPiece {
+	copyRook := &Rook{}
+	copyRook.Type = rook.Type
+	copyRook.Color = rook.Color
+	copyRook.CurrPosition = rook.CurrPosition
+	copyRook.PrevPosition = rook.PrevPosition
+	copyRook.MoveCount = rook.MoveCount
+	return copyRook
+}
+
 func (rook *Rook) GetMoveCount() int {
 	return rook.MoveCount
 }
@@ -71,4 +81,8 @@ func (rook *Rook) GetType() PieceType {
 func (rook *Rook) Move(newPos BoardPosition) {
 	rook.CurrPosition = newPos
 	rook.MoveCount++
+}
+
+func (rook *Rook) GetValue() int {
+	return 5
 }

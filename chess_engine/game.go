@@ -1,38 +1,93 @@
 package chess_engine
 
+type GameStatus uint8
+
+const (
+	GAME_STATUS_USER_MOVE        = 0
+	GAME_STATUS_ENGINE_MOVE      = 1
+	GAME_STATUS_USER_CHECKMATE   = 2
+	GAME_STATUS_ENGINE_CHECKMATE = 3
+)
+
 type Game struct {
-	board *Board
-	moves []*Move
+	Board       *Board
+	Moves       []*Move
+	UserColor   PieceColor
+	EngineColor PieceColor
+	Status      GameStatus
+	Picker      MovePicker
 }
 
-func NewGame() *Game {
+func NewGame(userColor PieceColor) *Game {
 	g := &Game{}
-	g.board = NewBoard()
+	g.Board = NewBoard()
+	g.UserColor = userColor
+	g.EngineColor = OppositeColor(userColor)
+	if userColor == White {
+		g.Status = GAME_STATUS_USER_MOVE
+	} else {
+		g.Status = GAME_STATUS_ENGINE_MOVE
+	}
+	g.Picker = NewBasicMovePicker(g.EngineColor)
 	return g
-}
-
-func (game *Game) MakeMove(move *Move) (bool, string) {
-	return true, "Valid Move"
 }
 
 func (game *Game) CheckMate() bool {
 	return false
 }
 
-// Make move.  Needs to fail for invalid moves
-// Invalid moves
-// Moving from a square with no piece
-// Moving wrong color piece (i.e. move white piece on black's turn)
-// Moving a piece to a square it can't get to based on how that piece can move
-// Moving to a square that is already occupied by a piece of the same color
-// Moving a piece other than the king while king is in check
-// Moving any piece after the king is in checkmate (i.e. game is over)
-// Need to validate state of the board after the move.
-// Move without an attack
-// Move with an attack that removes one of the opposing pieces
+func (game *Game) UserMove(move *Move) Result {
+	retVal := Result{false, INVALID_MOVE, ""}
 
-// Check for check and checkmate.
+	if game.Status == GAME_STATUS_USER_CHECKMATE {
+		retVal = Result{false, USER_CHECK_MATE, "User is in checkmate."}
+	} else if game.Status == GAME_STATUS_ENGINE_CHECKMATE {
+		retVal = Result{false, ENGINE_CHECK_MATE, "Engine is in checkmate."}
+	} else if game.Status != GAME_STATUS_USER_MOVE {
+		retVal = Result{false, NOT_USER_MOVE, "Not user move"}
+	} else if game.Board.Squares[move.StartPos].Occupied &&
+		game.Board.Squares[move.StartPos].CurrPiece.GetColor() == game.UserColor {
+		userMoves := game.Board.GetMoves(game.UserColor)
+		if MovesContainMove(*move, userMoves) {
+			tempBoard := game.Board.CopyBoard()
+			retVal = tempBoard.MovePiece(move)
+			if retVal.Result {
+				if !tempBoard.KingInCheck(game.UserColor) {
+					retVal = game.Board.MovePiece(move)
+					if retVal.Result {
+						game.Moves = append(game.Moves, move)
+						game.UpdateGameStatus()
+					}
+				}
+			}
+		}
+	}
+	return retVal
+}
 
-// Generate engine move
-// Search for best move (should be configurable how many moves to look ahead)
-// Return new move
+func (game *Game) EngineMove() (Result, *Move) {
+	retVal := Result{false, INVALID_MOVE, ""}
+	var retMove *Move = nil
+	retVal, retMove = game.Picker.GetNextMove(game)
+	if retVal.Result {
+		retVal = game.Board.MovePiece(retMove)
+		if retVal.Result {
+			game.UpdateGameStatus()
+			retVal = Result{true, NO_ERROR, ""}
+		}
+	}
+
+	return retVal, retMove
+}
+
+func (game *Game) UpdateGameStatus() {
+	if game.Board.CheckMate(game.UserColor) {
+		game.Status = GAME_STATUS_USER_CHECKMATE
+	} else if game.Board.CheckMate(game.EngineColor) {
+		game.Status = GAME_STATUS_ENGINE_CHECKMATE
+	} else if game.Status == GAME_STATUS_USER_MOVE {
+		game.Status = GAME_STATUS_ENGINE_MOVE
+	} else {
+		game.Status = GAME_STATUS_USER_MOVE
+	}
+}
