@@ -6,11 +6,12 @@ type King struct {
 	CurrPosition BoardPosition
 	PrevPosition BoardPosition
 	MoveCount    int
+	GenCastle    bool
 }
 
 func NewKing(pos BoardPosition, color PieceColor) *King {
 	king := &King{KING, color, pos,
-		INVALID_BOARD_POSITION, 0}
+		INVALID_BOARD_POSITION, 0, true}
 	return king
 }
 
@@ -39,6 +40,7 @@ func (king *King) GetMoves(board *Board) []*Move {
 	moves = king.CheckSquare(board, moves, rank-1, file)
 	moves = king.CheckSquare(board, moves, rank-1, file+1)
 	moves = king.CheckSquare(board, moves, rank, file+1)
+	moves = king.GetCastleMoves(board, moves)
 	return moves
 }
 
@@ -80,4 +82,39 @@ func (king *King) Move(newPos BoardPosition) {
 
 func (king *King) GetValue() int {
 	return 0
+}
+
+func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
+	king.GenCastle = false
+	if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
+		!board.Squares[F1].Occupied && !board.Squares[G1].Occupied && !board.KingInCheck(White) {
+		opMoves := board.GetMoves(Black)
+
+		if !MovesContainEndPos(F1, opMoves) && !MovesContainEndPos(G1, opMoves) {
+			moves = append(moves, NewCastleMove(king.CurrPosition, G1))
+		}
+	} else if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
+		!board.Squares[D1].Occupied && !board.Squares[C1].Occupied &&
+		!board.KingInCheck(White) {
+		opMoves := board.GetMoves(Black)
+		if !MovesContainEndPos(D1, opMoves) && !MovesContainEndPos(C1, opMoves) {
+			moves = append(moves, NewCastleMove(king.CurrPosition, C1))
+		}
+	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
+		!board.Squares[F8].Occupied && !board.Squares[G8].Occupied && !board.KingInCheck(Black) {
+		opMoves := board.GetMoves(White)
+
+		if !MovesContainEndPos(F8, opMoves) && !MovesContainEndPos(G8, opMoves) {
+			moves = append(moves, NewCastleMove(king.CurrPosition, G8))
+		}
+	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
+		!board.Squares[D8].Occupied && !board.Squares[C8].Occupied &&
+		!board.KingInCheck(Black) {
+		opMoves := board.GetMoves(White)
+		if !MovesContainEndPos(D8, opMoves) && !MovesContainEndPos(C8, opMoves) {
+			moves = append(moves, NewCastleMove(king.CurrPosition, C8))
+		}
+	}
+	king.GenCastle = true
+	return moves
 }

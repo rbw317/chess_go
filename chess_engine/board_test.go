@@ -376,3 +376,67 @@ func TestBoardCheckMate(t *testing.T) {
 		t.Errorf("Error! Board.CheckMate for white returned false when king IS in checkmate!")
 	}
 }
+
+func TestBoardKingCastle(t *testing.T) {
+	board := NewBoard()
+	board.Squares[F1].Occupied = false
+	board.Squares[G1].Occupied = false
+	move := &Move{E1, G1, false, true, false}
+	res := board.MovePiece(move)
+	if !res.Result {
+		t.Errorf("Error! Board.MovePiece for white castling move returned failure!")
+	}
+	if !board.Squares[F1].Occupied || board.Squares[F1].CurrPiece.GetType() != ROOK {
+		t.Errorf("Error! Board.MovePiece for white castling missing rook at F1 after move!")
+	}
+	if !board.Squares[G1].Occupied || board.Squares[G1].CurrPiece.GetType() != KING {
+		t.Errorf("Error! Board.MovePiece for white castling missing king at G1 after move!")
+	}
+
+	board = NewBoard()
+	board.Squares[B1].Occupied = false
+	board.Squares[C1].Occupied = false
+	board.Squares[D1].Occupied = false
+	move = &Move{E1, C1, false, true, false}
+	res = board.MovePiece(move)
+	if !res.Result {
+		t.Errorf("Error! Board.MovePiece for white castling move returned failure!")
+	}
+	if !board.Squares[D1].Occupied || board.Squares[D1].CurrPiece.GetType() != ROOK {
+		t.Errorf("Error! Board.MovePiece for white castling missing rook at D1 after move!")
+	}
+	if !board.Squares[C1].Occupied || board.Squares[C1].CurrPiece.GetType() != KING {
+		t.Errorf("Error! Board.MovePiece for white castling missing king at C1 after move!")
+	}
+
+	board = NewBoard()
+	board.Squares[B8].Occupied = false
+	board.Squares[C8].Occupied = false
+	board.Squares[D8].Occupied = false
+	move = &Move{E8, C8, false, true, false}
+	res = board.MovePiece(move)
+	if !res.Result {
+		t.Errorf("Error! Board.MovePiece for black castling move returned failure!")
+	}
+	if !board.Squares[D8].Occupied || board.Squares[D8].CurrPiece.GetType() != ROOK {
+		t.Errorf("Error! Board.MovePiece for black castling missing rook at D8 after move!")
+	}
+	if !board.Squares[C8].Occupied || board.Squares[C8].CurrPiece.GetType() != KING {
+		t.Errorf("Error! Board.MovePiece for black castling missing king at C8 after move!")
+	}
+
+	board = NewBoard()
+	board.Squares[F8].Occupied = false
+	board.Squares[G8].Occupied = false
+	move = &Move{E8, G8, false, true, false}
+	res = board.MovePiece(move)
+	if !res.Result {
+		t.Errorf("Error! Board.MovePiece for black castling move returned failure!")
+	}
+	if !board.Squares[F8].Occupied || board.Squares[F8].CurrPiece.GetType() != ROOK {
+		t.Errorf("Error! Board.MovePiece for black castling missing rook at F8 after move!")
+	}
+	if !board.Squares[G8].Occupied || board.Squares[G8].CurrPiece.GetType() != KING {
+		t.Errorf("Error! Board.MovePiece for black castling missing king at G8 after move!")
+	}
+}

@@ -54,14 +54,14 @@ func TestKingAllMoves(t *testing.T) {
 	if len(moves) != 8 {
 		t.Errorf("Error! King.GetMoves function did not return 8 moves for king on open center square!")
 	}
-	if !MovesContainMove(Move{E4, E5, false}, moves) &&
-		!MovesContainMove(Move{E4, E3, false}, moves) &&
-		!MovesContainMove(Move{E4, D4, false}, moves) &&
-		!MovesContainMove(Move{E4, F4, false}, moves) &&
-		!MovesContainMove(Move{E4, F5, false}, moves) &&
-		!MovesContainMove(Move{E4, F3, false}, moves) &&
-		!MovesContainMove(Move{E4, D5, false}, moves) &&
-		!MovesContainMove(Move{E4, D3, false}, moves) {
+	if !MovesContainMove(Move{E4, E5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, E3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D4, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F4, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D3, false, false, false}, moves) {
 		t.Errorf("Error! King.GetMoves for king on open center square missing squares!")
 	}
 }
@@ -75,11 +75,11 @@ func TestKingEdgeMoves(t *testing.T) {
 	if len(moves) != 5 {
 		t.Errorf("Error! King.GetMoves function did not return 4 moves for king on open edge square!")
 	}
-	if !MovesContainMove(Move{A4, A5, false}, moves) &&
-		!MovesContainMove(Move{A4, B5, false}, moves) &&
-		!MovesContainMove(Move{A4, B4, false}, moves) &&
-		!MovesContainMove(Move{A4, B3, false}, moves) &&
-		!MovesContainMove(Move{A4, A3, false}, moves) {
+	if !MovesContainMove(Move{A4, A5, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, B5, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, B4, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, B3, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, A3, false, false, false}, moves) {
 		t.Errorf("Error! King.GetMoves for king on open edge square missing squares!")
 	}
 }
@@ -117,5 +117,65 @@ func TestKingAttackMoves(t *testing.T) {
 	moves := board.Squares[E4].CurrPiece.GetMoves(board)
 	if len(moves) != 8 {
 		t.Errorf("Error! King.GetMoves function did not return 8 moves for king on center square surrounded by opponent pieces!")
+	}
+}
+
+func TestKingCastle(t *testing.T) {
+	board := NewBoard()
+	board.Squares[F1].Occupied = false
+	board.Squares[G1].Occupied = false
+	moves := board.Squares[E1].CurrPiece.GetMoves(board)
+	if len(moves) != 2 {
+		t.Errorf("Error! King.GetMoves function did not return 2 moves for king in castling position!")
+	} else if !moves[0].Castle && !moves[1].Castle {
+		t.Errorf("Error! King.GetMoves did not return a move flagged Castle when in Castle position!")
+	}
+	if !MovesContainMove(Move{E1, F1, false, false, false}, moves) &&
+		!MovesContainMove(Move{E1, H1, false, false, false}, moves) {
+		t.Errorf("Error! King.GetMoves for king on E1 castling square missing squares!")
+	}
+
+	board = NewBoard()
+	board.Squares[B1].Occupied = false
+	board.Squares[C1].Occupied = false
+	board.Squares[D1].Occupied = false
+	moves = board.Squares[E1].CurrPiece.GetMoves(board)
+	if len(moves) != 2 {
+		t.Errorf("Error! King.GetMoves function did not return 2 moves for king in castling position!")
+	} else if !moves[0].Castle && !moves[1].Castle {
+		t.Errorf("Error! King.GetMoves did not return a move flagged Castle when in Castle position!")
+	}
+	if !MovesContainMove(Move{E1, D1, false, false, false}, moves) &&
+		!MovesContainMove(Move{E1, C1, false, false, false}, moves) {
+		t.Errorf("Error! King.GetMoves for king on E1 castling square missing squares!")
+	}
+
+	board = NewBoard()
+	board.Squares[B8].Occupied = false
+	board.Squares[C8].Occupied = false
+	board.Squares[D8].Occupied = false
+	moves = board.Squares[E8].CurrPiece.GetMoves(board)
+	if len(moves) != 2 {
+		t.Errorf("Error! King.GetMoves function did not return 2 moves for king in castling position!")
+	} else if !moves[0].Castle && !moves[1].Castle {
+		t.Errorf("Error! King.GetMoves did not return a move flagged Castle when in Castle position!")
+	}
+	if !MovesContainMove(Move{E8, D8, false, false, false}, moves) &&
+		!MovesContainMove(Move{E8, C8, false, false, false}, moves) {
+		t.Errorf("Error! King.GetMoves for king on E1 castling square missing squares!")
+	}
+
+	board = NewBoard()
+	board.Squares[F8].Occupied = false
+	board.Squares[G8].Occupied = false
+	moves = board.Squares[E8].CurrPiece.GetMoves(board)
+	if len(moves) != 2 {
+		t.Errorf("Error! King.GetMoves function did not return 2 moves for king in castling position!")
+	} else if !moves[0].Castle && !moves[1].Castle {
+		t.Errorf("Error! King.GetMoves did not return a move flagged Castle when in Castle position!")
+	}
+	if !MovesContainMove(Move{E8, F8, false, false, false}, moves) &&
+		!MovesContainMove(Move{E8, H8, false, false, false}, moves) {
+		t.Errorf("Error! King.GetMoves for king on E1 castling square missing squares!")
 	}
 }

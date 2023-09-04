@@ -53,19 +53,19 @@ func TestWhiteBishopCenterMoves(t *testing.T) {
 	if len(moves) != 13 {
 		t.Errorf("Error! Bishop.GetMoves function did not return 4 moves for center square on empty board!")
 	}
-	if !MovesContainMove(Move{E4, D3, false}, moves) &&
-		!MovesContainMove(Move{E4, C2, false}, moves) &&
-		!MovesContainMove(Move{E4, D1, false}, moves) &&
-		!MovesContainMove(Move{E4, F5, false}, moves) &&
-		!MovesContainMove(Move{E4, G6, false}, moves) &&
-		!MovesContainMove(Move{E4, H7, false}, moves) &&
-		!MovesContainMove(Move{E4, F3, false}, moves) &&
-		!MovesContainMove(Move{E4, G2, false}, moves) &&
-		!MovesContainMove(Move{E4, H1, false}, moves) &&
-		!MovesContainMove(Move{E4, D5, false}, moves) &&
-		!MovesContainMove(Move{E4, C6, false}, moves) &&
-		!MovesContainMove(Move{E4, B7, false}, moves) &&
-		!MovesContainMove(Move{E4, A8, false}, moves) {
+	if !MovesContainMove(Move{E4, D3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D1, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G6, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, H7, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, H1, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C6, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, B7, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, A8, false, false, false}, moves) {
 		t.Errorf("Error! Bishop.GetMoves for white square bishop missing moves!")
 	}
 }
@@ -78,19 +78,19 @@ func TestBlackBishopCenterMoves(t *testing.T) {
 	if len(moves) != 13 {
 		t.Errorf("Error! Bishop.GetMoves function did not return 4 moves for center square on empty board!")
 	}
-	if !MovesContainMove(Move{D4, C3, false}, moves) &&
-		!MovesContainMove(Move{D4, B2, false}, moves) &&
-		!MovesContainMove(Move{D4, A1, false}, moves) &&
-		!MovesContainMove(Move{D4, E5, false}, moves) &&
-		!MovesContainMove(Move{D4, F6, false}, moves) &&
-		!MovesContainMove(Move{D4, G7, false}, moves) &&
-		!MovesContainMove(Move{D4, H8, false}, moves) &&
-		!MovesContainMove(Move{D4, E3, false}, moves) &&
-		!MovesContainMove(Move{D4, F2, false}, moves) &&
-		!MovesContainMove(Move{D4, G1, false}, moves) &&
-		!MovesContainMove(Move{D4, C5, false}, moves) &&
-		!MovesContainMove(Move{D4, B6, false}, moves) &&
-		!MovesContainMove(Move{D4, A7, false}, moves) {
+	if !MovesContainMove(Move{D4, C3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, B2, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, A1, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E5, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, F6, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, G7, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, H8, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, F2, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, G1, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, C5, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, B6, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, A7, false, false, false}, moves) {
 		t.Errorf("Error! Bishop.GetMoves for white square bishop missing moves!")
 	}
 }

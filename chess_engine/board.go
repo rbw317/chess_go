@@ -254,7 +254,39 @@ func (board *Board) MovePiece(move *Move) Result {
 			board.Squares[move.StartPos].CurrPiece = nil
 			board.Squares[move.StartPos].Occupied = false
 			board.Squares[move.EndPos].CurrPiece.Move(move.EndPos)
+			if move.Castle {
+				res = board.CastleMove(move)
+			}
 		}
 	}
 	return res
+}
+
+func (board *Board) CastleMove(move *Move) Result {
+	res := Result{true, NO_ERROR, ""}
+	if (move.StartPos != E1 && (move.EndPos != G1 && move.EndPos != C1)) &&
+		(move.StartPos != E8 && (move.EndPos != G8 && move.EndPos != C8)) {
+		res = Result{false, INVALID_MOVE, "Invalid castle move"}
+	} else {
+		rookStart := H1
+		rookEnd := F1
+		if move.StartPos == E1 && move.EndPos == C1 {
+			rookStart = A1
+			rookEnd = D1
+		} else if move.StartPos == E8 && move.EndPos == G8 {
+			rookStart = H8
+			rookEnd = F8
+		} else if move.StartPos == E8 && move.EndPos == C8 {
+			rookStart = A8
+			rookEnd = D8
+		}
+		board.Squares[rookEnd].CurrPiece = board.Squares[rookStart].CurrPiece
+		board.Squares[rookEnd].Occupied = true
+		board.Squares[rookStart].CurrPiece = nil
+		board.Squares[rookStart].Occupied = false
+		board.Squares[rookEnd].CurrPiece.Move(rookEnd)
+	}
+
+	return res
+
 }

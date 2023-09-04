@@ -467,10 +467,304 @@ func MovesContainMove(move Move, moves []*Move) bool {
 	return retVal
 }
 
+func MovesContainEndPos(endPos BoardPosition, moves []*Move) bool {
+	retVal := false
+
+	for _, m := range moves {
+		if m.EndPos == endPos {
+			retVal = true
+			break
+		}
+	}
+
+	return retVal
+}
+
 func OppositeColor(color PieceColor) PieceColor {
 	if color == White {
 		return Black
 	}
 
 	return White
+}
+
+func GetMoveFromUserString(startStr string, endStr string) *Move {
+	var move *Move = nil
+	startPos := GetPositionFromString(startStr)
+	endPos := GetPositionFromString(endStr)
+	if startPos != INVALID_BOARD_POSITION && endPos != INVALID_BOARD_POSITION {
+		move = NewMove(startPos, endPos)
+	}
+
+	return move
+}
+
+func GetPositionFromString(inStr string) BoardPosition {
+	var pos BoardPosition = INVALID_BOARD_POSITION
+	if inStr == "A1" {
+		pos = A1
+	} else if inStr == "A2" {
+		pos = A2
+	} else if inStr == "A3" {
+		pos = A3
+	} else if inStr == "A4" {
+		pos = A4
+	} else if inStr == "A5" {
+		pos = A5
+	} else if inStr == "A6" {
+		pos = A6
+	} else if inStr == "A7" {
+		pos = A7
+	} else if inStr == "A8" {
+		pos = A8
+	} else if inStr == "B1" {
+		pos = B1
+	} else if inStr == "B2" {
+		pos = B2
+	} else if inStr == "B3" {
+		pos = B3
+	} else if inStr == "B4" {
+		pos = B4
+	} else if inStr == "B5" {
+		pos = B5
+	} else if inStr == "B6" {
+		pos = B6
+	} else if inStr == "B7" {
+		pos = B7
+	} else if inStr == "B8" {
+		pos = B8
+	} else if inStr == "C1" {
+		pos = C1
+	} else if inStr == "C2" {
+		pos = C2
+	} else if inStr == "C3" {
+		pos = C3
+	} else if inStr == "C4" {
+		pos = C4
+	} else if inStr == "C5" {
+		pos = C5
+	} else if inStr == "C6" {
+		pos = C6
+	} else if inStr == "C7" {
+		pos = C7
+	} else if inStr == "C8" {
+		pos = C8
+	} else if inStr == "D1" {
+		pos = D1
+	} else if inStr == "D2" {
+		pos = D2
+	} else if inStr == "D3" {
+		pos = D3
+	} else if inStr == "D4" {
+		pos = D4
+	} else if inStr == "D5" {
+		pos = D5
+	} else if inStr == "D6" {
+		pos = D6
+	} else if inStr == "D7" {
+		pos = D7
+	} else if inStr == "D8" {
+		pos = D8
+	} else if inStr == "E1" {
+		pos = E1
+	} else if inStr == "E2" {
+		pos = E2
+	} else if inStr == "E3" {
+		pos = E3
+	} else if inStr == "E4" {
+		pos = E4
+	} else if inStr == "E5" {
+		pos = E5
+	} else if inStr == "E6" {
+		pos = E6
+	} else if inStr == "E7" {
+		pos = E7
+	} else if inStr == "E8" {
+		pos = E8
+	} else if inStr == "F1" {
+		pos = F1
+	} else if inStr == "F2" {
+		pos = F2
+	} else if inStr == "F3" {
+		pos = F3
+	} else if inStr == "F4" {
+		pos = F4
+	} else if inStr == "F5" {
+		pos = F5
+	} else if inStr == "F6" {
+		pos = F6
+	} else if inStr == "F7" {
+		pos = F7
+	} else if inStr == "F8" {
+		pos = F8
+	} else if inStr == "G1" {
+		pos = G1
+	} else if inStr == "G2" {
+		pos = G2
+	} else if inStr == "G3" {
+		pos = G3
+	} else if inStr == "G4" {
+		pos = G4
+	} else if inStr == "G5" {
+		pos = G5
+	} else if inStr == "G6" {
+		pos = G6
+	} else if inStr == "G7" {
+		pos = G7
+	} else if inStr == "G8" {
+		pos = G8
+	} else if inStr == "H1" {
+		pos = H1
+	} else if inStr == "H2" {
+		pos = H2
+	} else if inStr == "H3" {
+		pos = H3
+	} else if inStr == "H4" {
+		pos = H4
+	} else if inStr == "H5" {
+		pos = H5
+	} else if inStr == "H6" {
+		pos = H6
+	} else if inStr == "H7" {
+		pos = H7
+	} else if inStr == "H8" {
+		pos = H8
+	}
+
+	return pos
+}
+
+func GetPositionString(pos BoardPosition) string {
+	var retStr string = "IV"
+	if pos == A1 {
+		retStr = "A1"
+	} else if pos == A2 {
+		retStr = "A2"
+	} else if pos == A3 {
+		retStr = "A3"
+	} else if pos == A4 {
+		retStr = "A4"
+	} else if pos == A5 {
+		retStr = "A5"
+	} else if pos == A6 {
+		retStr = "A6"
+	} else if pos == A7 {
+		retStr = "A7"
+	} else if pos == A8 {
+		retStr = "A8"
+	} else if pos == B1 {
+		retStr = "B1"
+	} else if pos == B2 {
+		retStr = "B2"
+	} else if pos == B3 {
+		retStr = "B3"
+	} else if pos == B4 {
+		retStr = "B4"
+	} else if pos == B5 {
+		retStr = "B5"
+	} else if pos == B6 {
+		retStr = "B6"
+	} else if pos == B7 {
+		retStr = "B7"
+	} else if pos == B8 {
+		retStr = "B8"
+	} else if pos == C1 {
+		retStr = "C1"
+	} else if pos == C2 {
+		retStr = "C2"
+	} else if pos == C3 {
+		retStr = "C3"
+	} else if pos == C4 {
+		retStr = "C4"
+	} else if pos == C5 {
+		retStr = "C5"
+	} else if pos == C6 {
+		retStr = "C6"
+	} else if pos == C7 {
+		retStr = "C7"
+	} else if pos == C8 {
+		retStr = "C8"
+	} else if pos == D1 {
+		retStr = "D1"
+	} else if pos == D2 {
+		retStr = "D2"
+	} else if pos == D3 {
+		retStr = "D3"
+	} else if pos == D4 {
+		retStr = "D4"
+	} else if pos == D5 {
+		retStr = "D5"
+	} else if pos == D6 {
+		retStr = "D6"
+	} else if pos == D7 {
+		retStr = "D7"
+	} else if pos == D8 {
+		retStr = "D8"
+	} else if pos == E1 {
+		retStr = "E1"
+	} else if pos == E2 {
+		retStr = "E2"
+	} else if pos == E3 {
+		retStr = "E3"
+	} else if pos == E4 {
+		retStr = "E4"
+	} else if pos == E5 {
+		retStr = "E5"
+	} else if pos == E6 {
+		retStr = "E6"
+	} else if pos == E7 {
+		retStr = "E7"
+	} else if pos == E8 {
+		retStr = "E8"
+	} else if pos == F1 {
+		retStr = "F1"
+	} else if pos == F2 {
+		retStr = "F2"
+	} else if pos == F3 {
+		retStr = "F3"
+	} else if pos == F4 {
+		retStr = "F4"
+	} else if pos == F5 {
+		retStr = "F5"
+	} else if pos == F6 {
+		retStr = "F6"
+	} else if pos == F7 {
+		retStr = "F7"
+	} else if pos == F8 {
+		retStr = "F8"
+	} else if pos == G1 {
+		retStr = "G1"
+	} else if pos == G2 {
+		retStr = "G2"
+	} else if pos == G3 {
+		retStr = "G3"
+	} else if pos == G4 {
+		retStr = "G4"
+	} else if pos == G5 {
+		retStr = "G5"
+	} else if pos == G6 {
+		retStr = "G6"
+	} else if pos == G7 {
+		retStr = "G7"
+	} else if pos == G8 {
+		retStr = "G8"
+	} else if pos == H1 {
+		retStr = "H1"
+	} else if pos == H2 {
+		retStr = "H2"
+	} else if pos == H3 {
+		retStr = "H3"
+	} else if pos == H4 {
+		retStr = "H4"
+	} else if pos == H5 {
+		retStr = "H5"
+	} else if pos == H6 {
+		retStr = "H6"
+	} else if pos == H7 {
+		retStr = "H7"
+	} else if pos == H8 {
+		retStr = "H8"
+	}
+
+	return retStr
 }

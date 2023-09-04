@@ -55,20 +55,20 @@ func TestRookAllMoves(t *testing.T) {
 		t.Errorf("Error! Rook.GetMoves function did not return 14 moves for rook on open center square!")
 	}
 
-	if !MovesContainMove(Move{D4, D3, false}, moves) &&
-		!MovesContainMove(Move{D4, D2, false}, moves) &&
-		!MovesContainMove(Move{D4, D1, false}, moves) &&
-		!MovesContainMove(Move{D4, D5, false}, moves) &&
-		!MovesContainMove(Move{D4, D6, false}, moves) &&
-		!MovesContainMove(Move{D4, D7, false}, moves) &&
-		!MovesContainMove(Move{D4, D8, false}, moves) &&
-		!MovesContainMove(Move{D4, C4, false}, moves) &&
-		!MovesContainMove(Move{D4, B4, false}, moves) &&
-		!MovesContainMove(Move{D4, A4, false}, moves) &&
-		!MovesContainMove(Move{D4, E4, false}, moves) &&
-		!MovesContainMove(Move{D4, F4, false}, moves) &&
-		!MovesContainMove(Move{D4, G4, false}, moves) &&
-		!MovesContainMove(Move{D4, H4, false}, moves) {
+	if !MovesContainMove(Move{D4, D3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D2, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D1, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D5, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D6, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D7, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D8, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, C4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, B4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, A4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, F4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, G4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, H4, false, false, false}, moves) {
 		t.Errorf("Error! Rook.GetMoves for white square rook missing moves!")
 	}
 }
@@ -102,14 +102,14 @@ func TestRookAttackMoves(t *testing.T) {
 		t.Errorf("Error! Rook.GetMoves function did not return 4 moves for rook on center square surrounded by opponents!")
 	}
 
-	if !MovesContainMove(Move{D4, D5, false}, moves) &&
-		!MovesContainMove(Move{D4, C5, false}, moves) &&
-		!MovesContainMove(Move{D4, C4, false}, moves) &&
-		!MovesContainMove(Move{D4, C3, false}, moves) &&
-		!MovesContainMove(Move{D4, D3, false}, moves) &&
-		!MovesContainMove(Move{D4, E3, false}, moves) &&
-		!MovesContainMove(Move{D4, E4, false}, moves) &&
-		!MovesContainMove(Move{D4, E5, false}, moves) {
+	if !MovesContainMove(Move{D4, D5, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, C5, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, C4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, C3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, D3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E3, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E4, false, false, false}, moves) &&
+		!MovesContainMove(Move{D4, E5, false, false, false}, moves) {
 		t.Errorf("Error! Rook.GetMoves for white square rook surrounded by opposition missing moves!")
 	}
 }

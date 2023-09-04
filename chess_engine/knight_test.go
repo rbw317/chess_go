@@ -54,14 +54,14 @@ func TestKnightAllMoves(t *testing.T) {
 	if len(moves) != 8 {
 		t.Errorf("Error! Knight.GetMoves function did not return 8 moves for knight on open center square!")
 	}
-	if !MovesContainMove(Move{E4, D6, false}, moves) &&
-		!MovesContainMove(Move{E4, C5, false}, moves) &&
-		!MovesContainMove(Move{E4, C3, false}, moves) &&
-		!MovesContainMove(Move{E4, D2, false}, moves) &&
-		!MovesContainMove(Move{E4, F2, false}, moves) &&
-		!MovesContainMove(Move{E4, G3, false}, moves) &&
-		!MovesContainMove(Move{E4, G5, false}, moves) &&
-		!MovesContainMove(Move{E4, F6, false}, moves) {
+	if !MovesContainMove(Move{E4, D6, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F6, false, false, false}, moves) {
 		t.Errorf("Error! Knight.GetMoves for knight on open center square missing squares!")
 	}
 }
@@ -100,14 +100,14 @@ func TestKnightAttackMoves(t *testing.T) {
 	if len(moves) != 8 {
 		t.Errorf("Error! Knight.GetMoves function did not return 0 moves for king on totally blocked center square!")
 	}
-	if !MovesContainMove(Move{E4, D6, false}, moves) &&
-		!MovesContainMove(Move{E4, C5, false}, moves) &&
-		!MovesContainMove(Move{E4, C3, false}, moves) &&
-		!MovesContainMove(Move{E4, D2, false}, moves) &&
-		!MovesContainMove(Move{E4, F2, false}, moves) &&
-		!MovesContainMove(Move{E4, G3, false}, moves) &&
-		!MovesContainMove(Move{E4, G5, false}, moves) &&
-		!MovesContainMove(Move{E4, F6, false}, moves) {
+	if !MovesContainMove(Move{E4, D6, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, C3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, D2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F2, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G3, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, G5, false, false, false}, moves) &&
+		!MovesContainMove(Move{E4, F6, false, false, false}, moves) {
 		t.Errorf("Error! Knight.GetMoves for knight on center square surrounded by opposing pieces missing squares!")
 	}
 }
@@ -121,10 +121,10 @@ func TestKnightEdgeMoves(t *testing.T) {
 	if len(moves) != 4 {
 		t.Errorf("Error! Knight.GetMoves function did not return 4 moves for knight on open center edge square!")
 	}
-	if !MovesContainMove(Move{A4, B6, false}, moves) &&
-		!MovesContainMove(Move{A4, C5, false}, moves) &&
-		!MovesContainMove(Move{A4, C3, false}, moves) &&
-		!MovesContainMove(Move{A4, B2, false}, moves) {
+	if !MovesContainMove(Move{A4, B6, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, C5, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, C3, false, false, false}, moves) &&
+		!MovesContainMove(Move{A4, B2, false, false, false}, moves) {
 		t.Errorf("Error! Knight.GetMoves for knight on open center edge square missing squares!")
 	}
 
@@ -136,10 +136,10 @@ func TestKnightEdgeMoves(t *testing.T) {
 	if len(moves) != 4 {
 		t.Errorf("Error! Knight.GetMoves function did not return 4 moves for knight on open center edge square!")
 	}
-	if !MovesContainMove(Move{H4, G6, false}, moves) &&
-		!MovesContainMove(Move{H4, F5, false}, moves) &&
-		!MovesContainMove(Move{H4, F3, false}, moves) &&
-		!MovesContainMove(Move{H4, G2, false}, moves) {
+	if !MovesContainMove(Move{H4, G6, false, false, false}, moves) &&
+		!MovesContainMove(Move{H4, F5, false, false, false}, moves) &&
+		!MovesContainMove(Move{H4, F3, false, false, false}, moves) &&
+		!MovesContainMove(Move{H4, G2, false, false, false}, moves) {
 		t.Errorf("Error! Knight.GetMoves for knight on open center edge square missing squares!")
 	}
 }

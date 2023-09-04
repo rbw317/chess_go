@@ -49,9 +49,10 @@ func (game *Game) UserMove(move *Move) Result {
 		game.Board.Squares[move.StartPos].CurrPiece.GetColor() == game.UserColor {
 		userMoves := game.Board.GetMoves(game.UserColor)
 		if MovesContainMove(*move, userMoves) {
+			move.Castle = game.UserMoveIsCastle(move)
 			tempBoard := game.Board.CopyBoard()
-			retVal = tempBoard.MovePiece(move)
-			if retVal.Result {
+			tempRes := tempBoard.MovePiece(move)
+			if tempRes.Result {
 				if !tempBoard.KingInCheck(game.UserColor) {
 					retVal = game.Board.MovePiece(move)
 					if retVal.Result {
@@ -90,4 +91,13 @@ func (game *Game) UpdateGameStatus() {
 	} else {
 		game.Status = GAME_STATUS_USER_MOVE
 	}
+}
+
+func (game *Game) UserMoveIsCastle(move *Move) bool {
+	retVal := false
+	if (move.StartPos == E1 && (move.EndPos == G1 || move.EndPos == C1)) ||
+		(move.StartPos == E8 && (move.EndPos == G8 || move.EndPos == C8)) {
+		retVal = true
+	}
+	return retVal
 }

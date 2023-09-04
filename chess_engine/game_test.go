@@ -163,7 +163,7 @@ func TestGameEngineMovePicksCheckMate(t *testing.T) {
 		if move.StartPos != A3 && move.EndPos != B2 {
 			t.Errorf("Error! Game.EngineMove did not move to the only CheckMate square!")
 		}
-		if g.Status == GAME_STATUS_USER_CHECKMATE {
+		if g.Status != GAME_STATUS_USER_CHECKMATE {
 			t.Errorf("Error! Game.EngineMove did not update game.Status to GAME_STATUS_USER_CHECKMATE!")
 		}
 	}

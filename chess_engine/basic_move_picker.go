@@ -1,5 +1,9 @@
 package chess_engine
 
+import (
+	"math/rand"
+)
+
 type BasicMovePicker struct {
 	EngineColor PieceColor
 }
@@ -31,7 +35,7 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 		for _, m := range validMoves {
 			tempBoard := game.Board.CopyBoard()
 			tempBoard.MovePiece(m)
-			if !tempBoard.CheckMate(game.UserColor) {
+			if tempBoard.CheckMate(game.UserColor) {
 				retMove = m
 				break
 			}
@@ -44,27 +48,56 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 		}
 
 		// Pick the move with the highest score from the no attack moves
-		bestScore := 0
+		noAttackBestScore := 100
+		noAttackMovesMap := make(map[int][]*Move)
 		if retMove == nil {
 			for _, m := range noAttackMoves {
 				tempBoard := game.Board.CopyBoard()
 				tempBoard.MovePiece(m)
-				currScore := game.Board.GetScore(game.EngineColor)
-				if currScore > bestScore {
+				currScore := tempBoard.GetScore(game.UserColor)
+				if currScore <= noAttackBestScore {
 					retMove = m
+					if noAttackMovesMap[currScore] == nil {
+						noAttackMovesMap[currScore] = make([]*Move, 1, 1)
+						noAttackMovesMap[currScore][0] = m
+					} else {
+						noAttackMovesMap[currScore] = append(noAttackMovesMap[currScore], m)
+					}
+					noAttackBestScore = currScore
 				}
+			}
+
+			bestLen := len(noAttackMovesMap[noAttackBestScore])
+			if bestLen > 0 {
+				idx := rand.Int() % bestLen
+				retMove = noAttackMovesMap[noAttackBestScore][idx]
 			}
 		}
 
 		// If still no move pick the move with the best score from the attack moves
+		attackBestScore := 100
+		attackMovesMap := make(map[int][]*Move)
 		if retMove == nil {
 			for _, m := range attackMoves {
 				tempBoard := game.Board.CopyBoard()
 				tempBoard.MovePiece(m)
-				currScore := game.Board.GetScore(game.EngineColor)
-				if currScore > bestScore {
+				currScore := tempBoard.GetScore(game.UserColor)
+				if currScore <= attackBestScore {
 					retMove = m
+					if attackMovesMap[currScore] == nil {
+						attackMovesMap[currScore] = make([]*Move, 1, 1)
+						attackMovesMap[currScore][0] = m
+					} else {
+						attackMovesMap[currScore] = append(attackMovesMap[currScore], m)
+					}
+					attackBestScore = currScore
 				}
+			}
+
+			bestLen := len(attackMovesMap[attackBestScore])
+			if bestLen > 0 {
+				idx := rand.Int() % bestLen
+				retMove = attackMovesMap[attackBestScore][idx]
 			}
 		}
 	}
