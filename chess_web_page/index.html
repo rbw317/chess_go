@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Chess Go</title>
+    <link rel="stylesheet" href="/chessboardjs/css/chessboard-1.0.0.min.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col"><H1>Chess Go</H1></div>
+    </div>
+    <div class="row justify-content-center align-items-center">
+        <div class="col">
+            <div id="myBoard" style="width: 400px"></div>
+        </div>
+    </div>
+    <div class="row justify-content-center align-items-center">
+        <div class="col"><div>&nbsp;</div></div>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
+            <button type="button" id="new_game_button" class="btn btn-primary">Start Game</button>
+        &nbsp;
+            <button type="button" id="swap_button" class="btn btn-primary">Swap Orientation</button>
+        &nbsp;
+            User Color:&nbsp;
+            <select name="user_color" id="user_color">
+                <option value="white">white</option>
+                <option value="black">black</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">&nbsp;</div>
+    </div>
+    <div class="row">
+        <textarea id="info_area" name="info_area" rows="10" cols="100">
+        </textarea>
+    </div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<script src="/chessboardjs/js/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script>
+
+    $("#new_game_button").click(function()
+    {
+        var apiCall = 'http://localhost:8080/api/games?color=' + $("#user_color").val()
+        $.ajax({
+            url: apiCall,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'POST'
+        }).done(function(data, textStatus, jqXHR) {
+            $("#info_area").val("Started new game. ID - " + data.id + ", Status - " +
+                data.status + "\n");
+            $("#curr_game_id").val(data.id);
+            $.cookie("curr_game_id", data.id);
+            $.cookie("curr_game_output", $("#info_area").val());
+            $.cookie("curr_game_moves", "");
+            board.start();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+            });
+    });
+
+    $("#swap_button").click(function()
+    {
+        board.flip();
+    });
+
+    $('#user_color').on('change', function() {
+        alert( this.value );
+    });
+
+    function onDragStart (source, piece, position, orientation) {
+        // do not pick up pieces if the game is over
+        //if (game.game_over()) return false
+
+        // only pick up pieces for White
+        //if (piece.search(/^b/) !== -1) return false
+        return true
+    }
+
+    function onDrop (source, target) {
+        var gameId = $.cookie("curr_game_id");
+        if (gameId == null || gameId.length <= 0){
+            alert("Please start a game.");
+            board.move(target + "-" + source);
+            return;
+        }
+
+        if(source != target){
+            var apiUrl = 'http://localhost:8080/api/games/' + gameId + '/moves?start=' + source + '&end=' + target
+            $.ajax({
+                url: apiUrl,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: 'POST',
+                async: false
+            }).done(function(data, textStatus, jqXHR) {
+                $("#info_area").val( $("#info_area").val() + "User successfully moved from " + source + " to " + target + "\n");
+                addMove(source + "-" + target);
+                makeEngineMove();
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+                board.move(target + "-" + source);
+            });
+        }
+    }
+
+    function makeEngineMove(){
+        var gameId = $.cookie("curr_game_id");
+        var apiUrl = 'http://localhost:8080/api/games/' + gameId + '/moves';
+        $.ajax({
+            url: apiUrl,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'POST',
+            async: false
+        }).done(function(data, textStatus, jqXHR) {
+            $("#info_area").val( $("#info_area").val() + "Engine successfully moved from " + data.Move.start_pos + " to " + data.Move.end_pos + "\n");
+            var moveStr = data.Move.start_pos.toLowerCase() + "-" + data.Move.end_pos.toLowerCase();
+            board.move(moveStr);
+            addMove(moveStr);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+        });
+    }
+    // update the board position after the piece snap
+    // for castling, en passant, pawn promotion
+    function onSnapEnd () {
+        //board.position(game.fen())
+    }
+
+    function addMove(move){
+        var movesStr = $.cookie("curr_game_moves");
+        if(movesStr != null && movesStr.length > 0){
+            $.cookie("curr_game_moves", movesStr + "," + move);
+        }
+        else
+            $.cookie("curr_game_moves", move);
+    }
+    function reloadMoves() {
+        board.start();
+        var movesStr = $.cookie("curr_game_moves");
+        if(movesStr != null && movesStr.length > 0){
+            var moves = movesStr.split(",");
+            for (move of moves) {
+                board.move(move);
+            }
+        }
+    }
+
+    var config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+    }
+    var board = Chessboard('myBoard', config);
+    reloadMoves();
+</script>
+</body>
+</html>

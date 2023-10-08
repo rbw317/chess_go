@@ -91,6 +91,8 @@ func (game *Game) UpdateGameStatus() {
 	} else {
 		game.Status = GAME_STATUS_USER_MOVE
 	}
+	game.Board.KingInCheck(White)
+	game.Board.KingInCheck(Black)
 }
 
 func (game *Game) UserMoveIsCastle(move *Move) bool {

@@ -95,12 +95,16 @@ type Square struct {
 }
 
 type Board struct {
-	Squares [64]Square
+	Squares      [64]Square
+	WhiteInCheck bool
+	BlackInCheck bool
 }
 
 func NewBoard() *Board {
 	b := Board{}
 	b.InitBoard()
+	b.WhiteInCheck = false
+	b.BlackInCheck = false
 	return &b
 }
 
@@ -199,6 +203,11 @@ func (board *Board) GetMoves(color PieceColor) []*Move {
 
 func (board *Board) KingInCheck(color PieceColor) bool {
 	retVal := false
+	if color == White {
+		board.WhiteInCheck = false
+	} else {
+		board.BlackInCheck = false
+	}
 	oppositeColor := OppositeColor(color)
 	moves := board.GetMoves(oppositeColor)
 	kingPos := board.GetKingPosition(color)
@@ -206,6 +215,11 @@ func (board *Board) KingInCheck(color PieceColor) bool {
 		for _, move := range moves {
 			if move.EndPos == kingPos {
 				retVal = true
+				if color == White {
+					board.WhiteInCheck = true
+				} else {
+					board.BlackInCheck = true
+				}
 			}
 		}
 	}

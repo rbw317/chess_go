@@ -87,7 +87,7 @@ func (king *King) GetValue() int {
 func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
 	king.GenCastle = false
 	if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
-		!board.Squares[F1].Occupied && !board.Squares[G1].Occupied && !board.KingInCheck(White) {
+		!board.Squares[F1].Occupied && !board.Squares[G1].Occupied && !board.WhiteInCheck {
 		opMoves := board.GetMoves(Black)
 
 		if !MovesContainEndPos(F1, opMoves) && !MovesContainEndPos(G1, opMoves) {
@@ -95,13 +95,13 @@ func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
 		}
 	} else if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
 		!board.Squares[D1].Occupied && !board.Squares[C1].Occupied &&
-		!board.KingInCheck(White) {
+		!board.WhiteInCheck {
 		opMoves := board.GetMoves(Black)
 		if !MovesContainEndPos(D1, opMoves) && !MovesContainEndPos(C1, opMoves) {
 			moves = append(moves, NewCastleMove(king.CurrPosition, C1))
 		}
 	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
-		!board.Squares[F8].Occupied && !board.Squares[G8].Occupied && !board.KingInCheck(Black) {
+		!board.Squares[F8].Occupied && !board.Squares[G8].Occupied && !board.BlackInCheck {
 		opMoves := board.GetMoves(White)
 
 		if !MovesContainEndPos(F8, opMoves) && !MovesContainEndPos(G8, opMoves) {
@@ -109,7 +109,7 @@ func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
 		}
 	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
 		!board.Squares[D8].Occupied && !board.Squares[C8].Occupied &&
-		!board.KingInCheck(Black) {
+		!board.BlackInCheck {
 		opMoves := board.GetMoves(White)
 		if !MovesContainEndPos(D8, opMoves) && !MovesContainEndPos(C8, opMoves) {
 			moves = append(moves, NewCastleMove(king.CurrPosition, C8))
