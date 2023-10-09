@@ -1446,6 +1446,19 @@
       return widget.orientation('flip')
     }
 
+    widget.clear_piece = function() {
+      if (arguments.length === 0) return;
+      if (!validSquare(arguments[0])) return;
+
+      // remove the piece on the specified square
+      var newPosition = deepCopy(currentPosition)
+      delete newPosition[arguments[0]]
+      setCurrentPosition(newPosition)
+
+      // redraw the position
+      drawPositionInstant()
+    }
+
     // move pieces
     // TODO: this method should be variadic as well as accept an array of moves
     widget.move = function () {

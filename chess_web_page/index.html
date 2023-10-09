@@ -48,7 +48,7 @@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-<script src="/chessboardjs/js/chessboard-1.0.0.min.js"></script>
+<script src="/chessboardjs/js/chessboard-1.0.0.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script>
 
@@ -68,6 +68,8 @@
             $.cookie("curr_game_output", $("#info_area").val());
             $.cookie("curr_game_moves", "");
             board.start();
+            if($("#user_color").val() == "black")
+                makeEngineMove();
         }).fail(function(jqXHR, textStatus, errorThrown) {
             $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
             });
@@ -79,7 +81,7 @@
     });
 
     $('#user_color').on('change', function() {
-        alert( this.value );
+        ;
     });
 
     function onDragStart (source, piece, position, orientation) {
@@ -92,11 +94,13 @@
     }
 
     function onDrop (source, target) {
+        var retVal = "";
         var gameId = $.cookie("curr_game_id");
         if (gameId == null || gameId.length <= 0){
             alert("Please start a game.");
             board.move(target + "-" + source);
-            return;
+            board.move(target + "-" + source);
+            return "";
         }
 
         if(source != target){
@@ -110,12 +114,53 @@
             }).done(function(data, textStatus, jqXHR) {
                 $("#info_area").val( $("#info_area").val() + "User successfully moved from " + source + " to " + target + "\n");
                 addMove(source + "-" + target);
-                makeEngineMove();
+                checkCastle(data.Move);
+                checkEnPassant(data.Move);
+                checkPromotion(data.Move);
+                setTimeout(makeEngineMove, 300);
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
-                board.move(target + "-" + source);
+                retVal = "snapback"
             });
         }
+
+        return retVal;
+    }
+
+    function clearTest(){
+        board.clear_piece("a1");
+    }
+
+    function checkCastle(move){
+        if(move != null && move.castle){
+            if(move.start_pos == "e1"){
+                if(move.end_pos == "g1")
+                    board.move("h1-f1");
+                else if(move.end_pos == "c1")
+                    board.move("a1-d1");
+            }
+            if(move.start_pos == "e8"){
+                if(move.end_pos == "g8")
+                    board.move("h8-f8");
+                else if(move.end_pos == "c8")
+                    board.move("a8-d8");
+            }
+        }
+    }
+
+    function checkEnPassant(move){
+        if(move != null && move.en_passant){
+            var startFile = move.start_pos.charAt(0)
+            var startRank = move.start_pos.charAt(1)
+            var endFile = move.end_pos.charAt(0)
+            var endRank = move.end_pos.charAt(1)
+            var clearPos = endFile + startRank;
+            board.clear_piece(clearPos);
+        }
+    }
+
+    function checkPromotion(move){
+
     }
 
     function makeEngineMove(){
@@ -128,14 +173,16 @@
             type: 'POST',
             async: false
         }).done(function(data, textStatus, jqXHR) {
-            $("#info_area").val( $("#info_area").val() + "Engine successfully moved from " + data.Move.start_pos + " to " + data.Move.end_pos + "\n");
-            var moveStr = data.Move.start_pos.toLowerCase() + "-" + data.Move.end_pos.toLowerCase();
+            var moveStr = data.Move.start_pos.toLowerCase().trim() + "-" + data.Move.end_pos.toLowerCase().trim();
+            $("#info_area").val( $("#info_area").val() + "Engine successfully moved from " + moveStr + "\n");
+            board.move(moveStr);
             board.move(moveStr);
             addMove(moveStr);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
         });
     }
+
     // update the board position after the piece snap
     // for castling, en passant, pawn promotion
     function onSnapEnd () {
@@ -156,6 +203,7 @@
         if(movesStr != null && movesStr.length > 0){
             var moves = movesStr.split(",");
             for (move of moves) {
+                board.move(move);
                 board.move(move);
             }
         }

@@ -315,8 +315,11 @@ func (ws *ChessWebService) CreateMove(w http.ResponseWriter, r *http.Request) {
 								res.Result.Result = true
 								res.Move = &MoveInfo{}
 								res.Move.Mover = "user"
-								res.Move.StartPos = chess_engine.GetPositionString(move.StartPos)
-								res.Move.EndPos = chess_engine.GetPositionString(move.EndPos)
+								res.Move.StartPos = strings.ToLower(chess_engine.GetPositionString(move.StartPos))
+								res.Move.EndPos = strings.ToLower(chess_engine.GetPositionString(move.EndPos))
+								res.Move.Castle = move.Castle
+								res.Move.Promotion = move.Promote
+								res.Move.EnPassant = move.EnPassant
 								res.Move.ID = len(game.Moves)
 							}
 						}
@@ -340,8 +343,8 @@ func GetEngineMove(game *chess_engine.Game, w http.ResponseWriter, r *http.Reque
 		res.Result.Result = true
 		res.Move = &MoveInfo{}
 		res.Move.Mover = "engine"
-		res.Move.StartPos = chess_engine.GetPositionString(move.StartPos)
-		res.Move.EndPos = chess_engine.GetPositionString(move.EndPos)
+		res.Move.StartPos = strings.ToLower(chess_engine.GetPositionString(move.StartPos))
+		res.Move.EndPos = strings.ToLower(chess_engine.GetPositionString(move.EndPos))
 		res.Move.ID = len(game.Moves)
 	}
 	return res

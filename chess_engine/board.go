@@ -201,6 +201,31 @@ func (board *Board) GetMoves(color PieceColor) []*Move {
 	return moves
 }
 
+func (board *Board) GetAttackMoves(color PieceColor) []*Move {
+	moves := []*Move{}
+	for rank := 0; rank < 8; rank++ {
+		for file := 0; file < 8; file++ {
+			currPos := GetBoardPos(rank, file)
+			if board.Squares[currPos].Occupied &&
+				board.Squares[currPos].CurrPiece.GetColor() == color {
+				newMoves := []*Move{}
+				if board.Squares[currPos].CurrPiece.GetType() == KING {
+					king := board.Squares[currPos].CurrPiece.(*King)
+					newMoves = king.GetAttackMoves(board)
+				} else {
+					newMoves = board.Squares[currPos].CurrPiece.GetMoves(board)
+				}
+
+				if newMoves != nil {
+					moves = append(moves, newMoves...)
+				}
+			}
+		}
+	}
+
+	return moves
+}
+
 func (board *Board) KingInCheck(color PieceColor) bool {
 	retVal := false
 	if color == White {

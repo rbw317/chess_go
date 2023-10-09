@@ -59,8 +59,14 @@ func (game *Game) UserMove(move *Move) Result {
 						game.Moves = append(game.Moves, move)
 						game.UpdateGameStatus()
 					}
+				} else {
+					retVal = Result{false, INVALID_MOVE, "Invalid move.  Would put King in check."}
 				}
+			} else {
+				retVal = tempRes
 			}
+		} else {
+			retVal = Result{false, INVALID_MOVE, "Invalid move"}
 		}
 	}
 	return retVal
