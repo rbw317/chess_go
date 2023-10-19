@@ -7,6 +7,8 @@ const (
 	GAME_STATUS_ENGINE_MOVE      = 1
 	GAME_STATUS_USER_CHECKMATE   = 2
 	GAME_STATUS_ENGINE_CHECKMATE = 3
+	GAME_STATUS_STALEMATE        = 4
+	GAME_STATUS_DRAW             = 5
 )
 
 type Game struct {
@@ -58,7 +60,10 @@ func (game *Game) UserMove(move *Move) Result {
 					if retVal.Result {
 						game.Moves = append(game.Moves, move)
 						game.UpdateGameStatus()
+					} else {
+						retVal.Result = false
 					}
+
 				} else {
 					retVal = Result{false, INVALID_MOVE, "Invalid move.  Would put King in check."}
 				}
@@ -92,6 +97,10 @@ func (game *Game) UpdateGameStatus() {
 		game.Status = GAME_STATUS_USER_CHECKMATE
 	} else if game.Board.CheckMate(game.EngineColor) {
 		game.Status = GAME_STATUS_ENGINE_CHECKMATE
+	} else if game.Board.IsStalemate() {
+		game.Status = GAME_STATUS_STALEMATE
+	} else if game.Board.IsDraw() {
+		game.Status = GAME_STATUS_DRAW
 	} else if game.Status == GAME_STATUS_USER_MOVE {
 		game.Status = GAME_STATUS_ENGINE_MOVE
 	} else {
@@ -107,5 +116,15 @@ func (game *Game) UserMoveIsCastle(move *Move) bool {
 		(move.StartPos == E8 && (move.EndPos == G8 || move.EndPos == C8)) {
 		retVal = true
 	}
+	return retVal
+}
+
+func (game *Game) IsOver() bool {
+	retVal := true
+	if game.Status != GAME_STATUS_ENGINE_CHECKMATE && game.Status != GAME_STATUS_USER_CHECKMATE &&
+		game.Status != GAME_STATUS_STALEMATE && game.Status != GAME_STATUS_DRAW {
+		retVal = false
+	}
+
 	return retVal
 }

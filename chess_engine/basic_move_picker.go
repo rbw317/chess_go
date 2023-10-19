@@ -1,6 +1,7 @@
 package chess_engine
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -17,12 +18,12 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 	retVal := Result{false, INVALID_MOVE, ""}
 	validMoves := []*Move{}
 	var retMove *Move = nil
+	bestScore := -100
 
 	// Check for engine in checkmate
-	if game.Status != GAME_STATUS_ENGINE_CHECKMATE && game.Status != GAME_STATUS_USER_CHECKMATE {
+	if !game.IsOver() {
 		moves := game.Board.GetMoves(game.EngineColor)
-		attackMoves := []*Move{}
-		noAttackMoves := []*Move{}
+
 		for _, m := range moves {
 			tempBoard := game.Board.CopyBoard()
 			tempBoard.MovePiece(m)
@@ -31,79 +32,66 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 			}
 		}
 
-		// Look for CheckMate first
+		movesMap := make(map[string][]*Move)
 		for _, m := range validMoves {
 			tempBoard := game.Board.CopyBoard()
 			tempBoard.MovePiece(m)
+			// Look for CheckMate first
 			if tempBoard.CheckMate(game.UserColor) {
 				retMove = m
 				break
 			}
+			// Get the user moves from this position
 			userMoves := tempBoard.GetMoves(game.UserColor)
-			if MovesContainMove(*m, userMoves) {
-				attackMoves = append(attackMoves, m)
-			} else {
-				noAttackMoves = append(noAttackMoves, m)
+			bestUserScore := -100
+			var bestUserBoard *Board = nil
+			// Get the move which results in the highest user score
+			for _, userMove := range userMoves {
+				tempBoard2 := tempBoard.CopyBoard()
+				tempBoard2.MovePiece(userMove)
+				userScore := tempBoard2.GetScore(game.UserColor)
+				engineScore := tempBoard2.GetScore(game.EngineColor)
+				currScore := userScore - engineScore
+				if currScore > bestUserScore {
+					bestUserScore = currScore
+					bestUserBoard = tempBoard2
+					fmt.Printf("Best user move is %s with score %d.  Engine score %d, User score %d\n",
+						GetMoveString(*userMove), bestUserScore, engineScore, userScore)
+				}
 			}
-		}
-
-		// Pick the move with the highest score from the no attack moves
-		noAttackBestScore := 100
-		noAttackMovesMap := make(map[int][]*Move)
-		if retMove == nil {
-			for _, m := range noAttackMoves {
-				tempBoard := game.Board.CopyBoard()
-				tempBoard.MovePiece(m)
-				currScore := tempBoard.GetScore(game.UserColor)
-				if currScore <= noAttackBestScore {
-					retMove = m
-					if noAttackMovesMap[currScore] == nil {
-						noAttackMovesMap[currScore] = make([]*Move, 1, 1)
-						noAttackMovesMap[currScore][0] = m
-					} else {
-						noAttackMovesMap[currScore] = append(noAttackMovesMap[currScore], m)
-					}
-					noAttackBestScore = currScore
+			// Get the diff of the user's best move with this move.  See if this engine/user move combo ends up with the
+			// engine having the biggest score advantage. If so then that's the return move.
+			engineScore := bestUserBoard.GetScore(game.EngineColor)
+			userScore := bestUserBoard.GetScore(game.UserColor)
+			currScore := engineScore - userScore
+			if currScore >= bestScore {
+				bestScore = currScore
+				fmt.Printf("Best score is now %d with move %s.  Engine score %d, User Score %d\n", bestScore,
+					GetMoveString(*m), engineScore, userScore)
+				currScoreStr := fmt.Sprintf("%d", currScore)
+				if movesMap[currScoreStr] == nil {
+					movesMap[currScoreStr] = make([]*Move, 1, 1)
+					movesMap[currScoreStr][0] = m
+				} else {
+					movesMap[currScoreStr] = append(movesMap[currScoreStr], m)
 				}
 			}
 
-			bestLen := len(noAttackMovesMap[noAttackBestScore])
-			if bestLen > 0 {
-				idx := rand.Int() % bestLen
-				retMove = noAttackMovesMap[noAttackBestScore][idx]
-			}
 		}
 
-		// If still no move pick the move with the best score from the attack moves
-		attackBestScore := 100
-		attackMovesMap := make(map[int][]*Move)
-		if retMove == nil {
-			for _, m := range attackMoves {
-				tempBoard := game.Board.CopyBoard()
-				tempBoard.MovePiece(m)
-				currScore := tempBoard.GetScore(game.UserColor)
-				if currScore <= attackBestScore {
-					retMove = m
-					if attackMovesMap[currScore] == nil {
-						attackMovesMap[currScore] = make([]*Move, 1, 1)
-						attackMovesMap[currScore][0] = m
-					} else {
-						attackMovesMap[currScore] = append(attackMovesMap[currScore], m)
-					}
-					attackBestScore = currScore
-				}
-			}
-
-			bestLen := len(attackMovesMap[attackBestScore])
-			if bestLen > 0 {
-				idx := rand.Int() % bestLen
-				retMove = attackMovesMap[attackBestScore][idx]
-			}
+		bestScoreStr := fmt.Sprintf("%d", bestScore)
+		bestLen := len(movesMap[bestScoreStr])
+		fmt.Printf("There are %d engine moves with the score of %d", bestLen, bestScore)
+		if bestLen > 0 {
+			idx := rand.Int() % bestLen
+			retMove = movesMap[bestScoreStr][idx]
 		}
 	}
 
 	if retMove != nil {
+		fmt.Printf("Selected engine move: %s", GetMoveString(*retMove))
 		retVal = Result{true, NO_ERROR, ""}
 	}
+
 	return retVal, retMove
 }

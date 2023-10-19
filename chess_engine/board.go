@@ -98,6 +98,7 @@ type Board struct {
 	Squares      [64]Square
 	WhiteInCheck bool
 	BlackInCheck bool
+	PrevMove     Move
 }
 
 func NewBoard() *Board {
@@ -105,6 +106,7 @@ func NewBoard() *Board {
 	b.InitBoard()
 	b.WhiteInCheck = false
 	b.BlackInCheck = false
+	b.PrevMove = Move{}
 	return &b
 }
 
@@ -141,6 +143,7 @@ func (board *Board) InitBoard() {
 	board.Squares[F7] = Square{Occupied: true, CurrPiece: NewPawn(F7, Black)}
 	board.Squares[G7] = Square{Occupied: true, CurrPiece: NewPawn(G7, Black)}
 	board.Squares[H7] = Square{Occupied: true, CurrPiece: NewPawn(H7, Black)}
+	board.PrevMove = Move{}
 }
 
 func (board *Board) CopyBoard() *Board {
@@ -153,6 +156,9 @@ func (board *Board) CopyBoard() *Board {
 			}
 		}
 	}
+	copyBoard.PrevMove = board.PrevMove
+	copyBoard.WhiteInCheck = board.WhiteInCheck
+	copyBoard.BlackInCheck = board.BlackInCheck
 	return copyBoard
 }
 
@@ -269,6 +275,44 @@ func (board *Board) CheckMate(color PieceColor) bool {
 		retVal = false
 	}
 
+	if retVal {
+		retVal = true
+	}
+	return retVal
+}
+
+func (board *Board) IsStalemate() bool {
+	retVal := false
+	whiteMoves := board.GetMoves(White)
+	blackMoves := board.GetMoves(Black)
+
+	if len(whiteMoves) == 0 && board.KingInCheck(White) {
+		retVal = true
+	} else if len(blackMoves) == 0 && board.KingInCheck(Black) {
+		retVal = true
+	}
+	return retVal
+}
+
+func (board *Board) IsDraw() bool {
+	retVal := false
+	whitePieceCnt := 0
+	blackPieceCnt := 0
+	for rank := 0; rank < 8; rank++ {
+		for file := 0; file < 8; file++ {
+			currPos := GetBoardPos(rank, file)
+			if board.Squares[currPos].Occupied && board.Squares[currPos].CurrPiece.GetColor() == Black {
+				blackPieceCnt += 1
+			} else if board.Squares[currPos].Occupied && board.Squares[currPos].CurrPiece.GetColor() == White {
+				whitePieceCnt += 1
+			}
+		}
+	}
+
+	if blackPieceCnt <= 1 && whitePieceCnt <= 1 {
+		retVal = true
+	}
+
 	return retVal
 }
 
@@ -296,6 +340,7 @@ func (board *Board) MovePiece(move *Move) Result {
 			if move.Castle {
 				res = board.CastleMove(move)
 			}
+			board.PrevMove = *move
 		}
 	}
 	return res

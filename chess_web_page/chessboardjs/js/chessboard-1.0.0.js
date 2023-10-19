@@ -1459,6 +1459,19 @@
       drawPositionInstant()
     }
 
+    widget.promote_piece = function() {
+      if (arguments.length === 0) return;
+      if (!validSquare(arguments[0])) return;
+
+      // remove the piece on the specified square
+      var newPosition = deepCopy(currentPosition)
+      newPosition[arguments[0]] = arguments[1];
+      setCurrentPosition(newPosition)
+      draggedPiece = newPosition[arguments[0]];
+      // redraw the position
+      drawPositionInstant()
+    }
+
     // move pieces
     // TODO: this method should be variadic as well as accept an array of moves
     widget.move = function () {

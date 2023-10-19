@@ -15,8 +15,20 @@
         <div class="col"><H1>Chess Go</H1></div>
     </div>
     <div class="row justify-content-center align-items-center">
-        <div class="col">
+        <div class="col-sm-6">
             <div id="myBoard" style="width: 400px"></div>
+        </div>
+        <div class="col-sm-2">
+            <div class="row">
+                <div class="col-sm-3">
+                    <b>Moves</b>
+                </div>
+                <div class="col-sm-3">
+                    <textarea id="moves_area" name="moves_area" rows="18" cols="5" value="">
+                    </textarea>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="row justify-content-center align-items-center">
@@ -63,6 +75,7 @@
         }).done(function(data, textStatus, jqXHR) {
             $("#info_area").val("Started new game. ID - " + data.id + ", Status - " +
                 data.status + "\n");
+            $("#moves_area").val("");
             $("#curr_game_id").val(data.id);
             $.cookie("curr_game_id", data.id);
             $.cookie("curr_game_output", $("#info_area").val());
@@ -71,7 +84,7 @@
             if($("#user_color").val() == "black")
                 makeEngineMove();
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+            writeOut("Error: " + errorThrown.toString());
             });
     });
 
@@ -113,13 +126,15 @@
                 async: false
             }).done(function(data, textStatus, jqXHR) {
                 $("#info_area").val( $("#info_area").val() + "User successfully moved from " + source + " to " + target + "\n");
+
                 addMove(source + "-" + target);
                 checkCastle(data.Move);
                 checkEnPassant(data.Move);
                 checkPromotion(data.Move);
-                setTimeout(makeEngineMove, 300);
+                setTimeout(getGameStatus, 300);
             }).fail(function(jqXHR, textStatus, errorThrown) {
-                $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+                writeOut("Error: " + errorThrown.toString());
+                setTimeout(getGameStatus, 1000);
                 retVal = "snapback"
             });
         }
@@ -160,7 +175,52 @@
     }
 
     function checkPromotion(move){
+        if(move != null && move.promotion){
+            var piece = 'bQ';
+            if($("#user_color").val() == "white")
+                piece = 'wQ';
+            board.promote_piece(move.end_pos, piece)
+        }
+    }
 
+    function getGameStatus(){
+        var gameId = $.cookie("curr_game_id");
+        var apiUrl = 'http://localhost:8080/api/games/' + gameId;
+        $.ajax({
+            url: apiUrl,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            type: 'GET',
+            async: false
+        }).done(function(data, textStatus, jqXHR) {
+            var status = data.Game.status.toLowerCase().trim();
+            if(status == "user move"){
+                writeOut("User Move");
+            }
+            else if(status == "engine move"){
+                writeOut("Engine Move");
+                setTimeout(makeEngineMove, 300);
+            }
+            else if(status == "user check mate"){
+                writeOut("Engine checkmated the user!");
+                $("#curr_game_id").val("");
+            }
+            else if(status == "engine check mate"){
+                writeOut("User checkmated the engine!");
+                $("#curr_game_id").val("");
+            }
+            else if(status == "stalemate"){
+                writeOut("Stalemate!");
+                $("#curr_game_id").val("");
+            }
+            else if(status == "draw"){
+                writeOut("Draw!");
+                $("#curr_game_id").val("");
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            writeOut("Error getting game status: " + errorThrown.toString());
+            setTimeout(getGameStatus, 1000);
+        });
     }
 
     function makeEngineMove(){
@@ -174,12 +234,16 @@
             async: false
         }).done(function(data, textStatus, jqXHR) {
             var moveStr = data.Move.start_pos.toLowerCase().trim() + "-" + data.Move.end_pos.toLowerCase().trim();
-            $("#info_area").val( $("#info_area").val() + "Engine successfully moved from " + moveStr + "\n");
+            writeOut("Engine successfully moved from " + moveStr);
             board.move(moveStr);
             board.move(moveStr);
             addMove(moveStr);
+            checkEnPassant(data.Move);
+            checkCastle(data.Move);
+            setTimeout(getGameStatus, 300);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            $("#info_area").val( $("#info_area").val() + "Error: " + errorThrown.toString() + "\n");
+            writeOut("Error: " + errorThrown.toString());
+            setTimeout(getGameStatus, 1000);
         });
     }
 
@@ -196,17 +260,30 @@
         }
         else
             $.cookie("curr_game_moves", move);
+        $("#moves_area").val( $("#moves_area").val() + move + "\n");
+        document.getElementById('moves_area').scrollTop = document.getElementById('moves_area').scrollHeight;
     }
+
     function reloadMoves() {
         board.start();
         var movesStr = $.cookie("curr_game_moves");
+
         if(movesStr != null && movesStr.length > 0){
             var moves = movesStr.split(",");
             for (move of moves) {
                 board.move(move);
                 board.move(move);
+                $("#moves_area").val( $("#moves_area").val() + move + "\n");
+                document.getElementById('moves_area').scrollTop = document.getElementById('moves_area').scrollHeight;
             }
         }
+    }
+
+    function writeOut(value){
+        $("#info_area").val( $("#info_area").val() + value + "\n");
+        var content = document.getElementById('info_area');
+        content.scrollTop = content.scrollHeight;
+        $.cookie("curr_game_output", $("#info_area").val());
     }
 
     var config = {
@@ -217,6 +294,8 @@
         onSnapEnd: onSnapEnd
     }
     var board = Chessboard('myBoard', config);
+    $("#info_area").val($.cookie("curr_game_output"));
+    document.getElementById('info_area').scrollTop = document.getElementById('info_area').scrollHeight;
     reloadMoves();
 </script>
 </body>

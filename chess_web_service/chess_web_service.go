@@ -304,23 +304,39 @@ func (ws *ChessWebService) CreateMove(w http.ResponseWriter, r *http.Request) {
 							res.Result.Result = false
 							res.Result.Error = "Invalid Board Positions"
 						} else {
-							move := chess_engine.NewMove(startPos, endPos)
-							moveRes := game.UserMove(move)
-							if !moveRes.Result {
+							if game.Board.Squares[startPos].Occupied &&
+								game.Board.Squares[startPos].CurrPiece != nil {
+								move := chess_engine.NewMove(startPos, endPos)
+								endRank, _ := chess_engine.GetRankFile(move.EndPos)
+								promotion := false
+								if (game.Board.Squares[move.StartPos].CurrPiece.GetType() == chess_engine.PAWN &&
+									game.UserColor == chess_engine.White && endRank == 7) ||
+									(game.UserColor == chess_engine.Black && endRank == 0) {
+									fmt.Print("Pawn Promotion! Promoting to queen")
+									game.Board.Squares[move.StartPos].CurrPiece = chess_engine.NewQueen(move.StartPos, game.UserColor)
+									promotion = true
+								}
+								moveRes := game.UserMove(move)
+								if !moveRes.Result {
+									w.WriteHeader(http.StatusBadRequest)
+									res.Result.Result = false
+									res.Result.Error = moveRes.ResStr
+								} else {
+									w.WriteHeader(http.StatusOK)
+									res.Result.Result = true
+									res.Move = &MoveInfo{}
+									res.Move.Mover = "user"
+									res.Move.StartPos = strings.ToLower(chess_engine.GetPositionString(move.StartPos))
+									res.Move.EndPos = strings.ToLower(chess_engine.GetPositionString(move.EndPos))
+									res.Move.Castle = move.Castle
+									res.Move.EnPassant = move.EnPassant
+									res.Move.Promotion = promotion
+									res.Move.ID = len(game.Moves)
+								}
+							} else {
 								w.WriteHeader(http.StatusBadRequest)
 								res.Result.Result = false
-								res.Result.Error = moveRes.ResStr
-							} else {
-								w.WriteHeader(http.StatusOK)
-								res.Result.Result = true
-								res.Move = &MoveInfo{}
-								res.Move.Mover = "user"
-								res.Move.StartPos = strings.ToLower(chess_engine.GetPositionString(move.StartPos))
-								res.Move.EndPos = strings.ToLower(chess_engine.GetPositionString(move.EndPos))
-								res.Move.Castle = move.Castle
-								res.Move.Promotion = move.Promote
-								res.Move.EnPassant = move.EnPassant
-								res.Move.ID = len(game.Moves)
+								res.Result.Error = "No piece at start position"
 							}
 						}
 					}
@@ -346,6 +362,9 @@ func GetEngineMove(game *chess_engine.Game, w http.ResponseWriter, r *http.Reque
 		res.Move.StartPos = strings.ToLower(chess_engine.GetPositionString(move.StartPos))
 		res.Move.EndPos = strings.ToLower(chess_engine.GetPositionString(move.EndPos))
 		res.Move.ID = len(game.Moves)
+		res.Move.EnPassant = move.EnPassant
+		res.Move.Castle = move.Castle
+		res.Move.Promotion = move.Promote
 	}
 	return res
 }
@@ -453,6 +472,12 @@ func GetGameStatusString(status chess_engine.GameStatus) string {
 		break
 	case chess_engine.GAME_STATUS_ENGINE_CHECKMATE:
 		resStr = "Engine Check Mate"
+		break
+	case chess_engine.GAME_STATUS_STALEMATE:
+		resStr = "Stalemate"
+		break
+	case chess_engine.GAME_STATUS_DRAW:
+		resStr = "Draw"
 		break
 	default:
 		resStr = "Unknown state"

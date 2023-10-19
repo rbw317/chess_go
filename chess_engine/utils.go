@@ -1,5 +1,7 @@
 package chess_engine
 
+import "fmt"
+
 type ErrorCode uint8
 
 const (
@@ -767,4 +769,8 @@ func GetPositionString(pos BoardPosition) string {
 	}
 
 	return retStr
+}
+
+func GetMoveString(move Move) string {
+	return fmt.Sprintf("%s - %s", GetPositionString(move.StartPos), GetPositionString(move.EndPos))
 }

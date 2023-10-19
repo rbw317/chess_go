@@ -79,7 +79,7 @@ func (pawn *Pawn) GetMoves(board *Board) []*Move {
 
 	// Check for en Passant with white
 	if pawn.Color == White && rank == 4 {
-		if file-1 > 0 { // Check for enPassant to the left
+		if file-1 >= 0 { // Check for enPassant to the left
 			startPos := GetBoardPos(6, file-1)
 			attackPos := GetBoardPos(rank, file-1)
 			movePos := GetBoardPos(5, file-1)
@@ -87,7 +87,8 @@ func (pawn *Pawn) GetMoves(board *Board) []*Move {
 				board.Squares[attackPos].CurrPiece.GetType() == PAWN &&
 				board.Squares[attackPos].CurrPiece.GetColor() == Black &&
 				board.Squares[attackPos].CurrPiece.GetMoveCount() == 1 &&
-				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos {
+				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos &&
+				board.PrevMove.StartPos == startPos {
 				moves = append(moves, NewEnPassantMove(pawn.CurrPosition, movePos))
 			}
 		}
@@ -99,14 +100,15 @@ func (pawn *Pawn) GetMoves(board *Board) []*Move {
 				board.Squares[attackPos].CurrPiece.GetType() == PAWN &&
 				board.Squares[attackPos].CurrPiece.GetColor() == Black &&
 				board.Squares[attackPos].CurrPiece.GetMoveCount() == 1 &&
-				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos {
+				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos &&
+				board.PrevMove.StartPos == startPos {
 				moves = append(moves, NewEnPassantMove(pawn.CurrPosition, movePos))
 			}
 		}
 	}
 
 	if pawn.Color == Black && rank == 3 {
-		if file-1 > 0 { // Check for enPassant to the left
+		if file-1 >= 0 { // Check for enPassant to the left
 			startPos := GetBoardPos(1, file-1)
 			attackPos := GetBoardPos(rank, file-1)
 			movePos := GetBoardPos(2, file-1)
@@ -114,7 +116,8 @@ func (pawn *Pawn) GetMoves(board *Board) []*Move {
 				board.Squares[attackPos].CurrPiece.GetType() == PAWN &&
 				board.Squares[attackPos].CurrPiece.GetColor() == White &&
 				board.Squares[attackPos].CurrPiece.GetMoveCount() == 1 &&
-				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos {
+				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos &&
+				board.PrevMove.StartPos == startPos {
 				moves = append(moves, NewEnPassantMove(pawn.CurrPosition, movePos))
 			}
 		}
@@ -126,7 +129,8 @@ func (pawn *Pawn) GetMoves(board *Board) []*Move {
 				board.Squares[attackPos].CurrPiece.GetType() == PAWN &&
 				board.Squares[attackPos].CurrPiece.GetColor() == White &&
 				board.Squares[attackPos].CurrPiece.GetMoveCount() == 1 &&
-				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos {
+				board.Squares[attackPos].CurrPiece.GetPrevPosition() == startPos &&
+				board.PrevMove.StartPos == startPos {
 				moves = append(moves, NewEnPassantMove(pawn.CurrPosition, movePos))
 			}
 		}
@@ -151,6 +155,7 @@ func (pawn *Pawn) GetType() PieceType {
 }
 
 func (pawn *Pawn) Move(newPos BoardPosition) {
+	pawn.PrevPosition = pawn.CurrPosition
 	pawn.CurrPosition = newPos
 	pawn.MoveCount++
 }

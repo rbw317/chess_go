@@ -101,7 +101,9 @@ func (king *King) GetValue() int {
 func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
 	king.GenCastle = false
 	if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
-		!board.Squares[F1].Occupied && !board.Squares[G1].Occupied && !board.WhiteInCheck {
+		!board.Squares[F1].Occupied && !board.Squares[G1].Occupied && !board.WhiteInCheck &&
+		board.Squares[H1].Occupied && board.Squares[H1].CurrPiece != nil &&
+		board.Squares[H1].CurrPiece.GetColor() == White && board.Squares[H1].CurrPiece.GetType() == ROOK {
 		opMoves := board.GetAttackMoves(Black)
 
 		if !MovesContainEndPos(F1, opMoves) && !MovesContainEndPos(G1, opMoves) {
@@ -109,20 +111,25 @@ func (king *King) GetCastleMoves(board *Board, moves []*Move) []*Move {
 		}
 	} else if king.CurrPosition == E1 && king.Color == White && king.MoveCount == 0 &&
 		!board.Squares[D1].Occupied && !board.Squares[C1].Occupied &&
-		!board.WhiteInCheck {
+		!board.WhiteInCheck && board.Squares[A1].Occupied && board.Squares[A1].CurrPiece != nil &&
+		board.Squares[A1].CurrPiece.GetColor() == White && board.Squares[A1].CurrPiece.GetType() == ROOK {
 		opMoves := board.GetAttackMoves(Black)
 		if !MovesContainEndPos(D1, opMoves) && !MovesContainEndPos(C1, opMoves) {
 			moves = append(moves, NewCastleMove(king.CurrPosition, C1))
 		}
 	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
-		!board.Squares[F8].Occupied && !board.Squares[G8].Occupied && !board.BlackInCheck {
+		!board.Squares[F8].Occupied && !board.Squares[G8].Occupied && !board.BlackInCheck &&
+		board.Squares[H8].Occupied && board.Squares[H8].CurrPiece != nil &&
+		board.Squares[H8].CurrPiece.GetColor() == Black && board.Squares[H8].CurrPiece.GetType() == ROOK {
 		opMoves := board.GetAttackMoves(White)
 
 		if !MovesContainEndPos(F8, opMoves) && !MovesContainEndPos(G8, opMoves) {
 			moves = append(moves, NewCastleMove(king.CurrPosition, G8))
 		}
 	} else if king.CurrPosition == E8 && king.Color == Black && king.MoveCount == 0 &&
-		!board.Squares[D8].Occupied && !board.Squares[C8].Occupied &&
+		!board.Squares[D8].Occupied && !board.Squares[C8].Occupied && board.Squares[A8].Occupied &&
+		board.Squares[A8].CurrPiece != nil && board.Squares[A8].CurrPiece.GetColor() == Black &&
+		board.Squares[A8].CurrPiece.GetType() == ROOK &&
 		!board.BlackInCheck {
 		opMoves := board.GetAttackMoves(White)
 		if !MovesContainEndPos(D8, opMoves) && !MovesContainEndPos(C8, opMoves) {
