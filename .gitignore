@@ -20,5 +20,5 @@
 # Go workspace file
 go.work
 
-./chess_go
+chess_go
 
