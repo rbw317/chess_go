@@ -55,8 +55,6 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 				if currScore > bestUserScore {
 					bestUserScore = currScore
 					bestUserBoard = tempBoard2
-					fmt.Printf("Best user move is %s with score %d.  Engine score %d, User score %d\n",
-						GetMoveString(*userMove), bestUserScore, engineScore, userScore)
 				}
 			}
 			// Get the diff of the user's best move with this move.  See if this engine/user move combo ends up with the
@@ -66,8 +64,6 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 			currScore := engineScore - userScore
 			if currScore >= bestScore {
 				bestScore = currScore
-				fmt.Printf("Best score is now %d with move %s.  Engine score %d, User Score %d\n", bestScore,
-					GetMoveString(*m), engineScore, userScore)
 				currScoreStr := fmt.Sprintf("%d", currScore)
 				if movesMap[currScoreStr] == nil {
 					movesMap[currScoreStr] = make([]*Move, 1, 1)
@@ -81,7 +77,6 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 
 		bestScoreStr := fmt.Sprintf("%d", bestScore)
 		bestLen := len(movesMap[bestScoreStr])
-		fmt.Printf("There are %d engine moves with the score of %d", bestLen, bestScore)
 		if bestLen > 0 {
 			idx := rand.Int() % bestLen
 			retMove = movesMap[bestScoreStr][idx]
@@ -89,7 +84,6 @@ func (picker *BasicMovePicker) GetNextMove(game *Game) (Result, *Move) {
 	}
 
 	if retMove != nil {
-		fmt.Printf("Selected engine move: %s", GetMoveString(*retMove))
 		retVal = Result{true, NO_ERROR, ""}
 	}
 

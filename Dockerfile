@@ -15,5 +15,5 @@ WORKDIR /app
 RUN go get chess_go/chess_engine
 RUN go get chess_go/chess_web_service
 RUN CGO_ENABLED=0 GOOS=linux go build -o /chess_go
-EXPOSE 8080
+EXPOSE 80
 CMD ["/chess_go"]

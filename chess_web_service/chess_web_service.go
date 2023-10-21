@@ -67,7 +67,9 @@ type GetMoveInfoResult struct {
 var ws_instance *ChessWebService = nil
 
 func GetWebServiceInstance(port string) *ChessWebService {
+	fmt.Printf("Getting WS Instance\n")
 	if ws_instance == nil {
+		fmt.Printf("WS Instance is nil.  Creating new instance.")
 		ws_instance = &ChessWebService{}
 		ws_instance.GameCount = 0
 		ws_instance.Games = make(map[int]*chess_engine.Game)
@@ -91,9 +93,20 @@ func GetWebServiceInstance(port string) *ChessWebService {
 		ws_instance.Router.HandleFunc("/api/games/{game_id}/moves/{move_id}", UpdateMove).Methods("PUT")
 		// Delete the specified move from the specified game
 		ws_instance.Router.HandleFunc("/api/games/{game_id}/moves/{move_id}", DeleteMove).Methods("DELETE")
+		ws_instance.Router.NotFoundHandler = http.HandlerFunc(NotFound)
 	}
 
 	return ws_instance
+}
+
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	var result ApiResult
+	result.Result = false
+	w.Header().Set("Content-Type", "application/json")
+	result.Error = fmt.Sprintf("Unknown request at %s", r.URL)
+	fmt.Printf("%s\n", result.Error)
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(result)
 }
 
 func (ws *ChessWebService) Run() {
@@ -130,6 +143,7 @@ func (ws *ChessWebService) GetGames(w http.ResponseWriter, r *http.Request) {
 		result.Games = append(result.Games, &GameInfo{id, GetGameStatusString(game.Status)})
 	}
 	result.Result.Result = true
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)
 }

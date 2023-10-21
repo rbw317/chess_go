@@ -14,6 +14,13 @@
     <div class="row">
         <div class="col"><H1>Chess Go</H1></div>
     </div>
+    <div class="row">
+        <div class="col-sm">
+            This is a chess engine written in the Go programming language.  Source code is available on github at
+            <a href="https://github.com/rbw317/chess_go">https://github.com/rbw317/chess_go</a>.
+        </div>
+    </div>
+    <div class="row">&nbsp;</div>
     <div class="row justify-content-center align-items-center">
         <div class="col-sm-6">
             <div id="myBoard" style="width: 400px"></div>
@@ -66,7 +73,7 @@
 
     $("#new_game_button").click(function()
     {
-        var apiCall = 'http://localhost:8080/api/games?color=' + $("#user_color").val()
+        var apiCall = '/api/games?color=' + $("#user_color").val()
         $.ajax({
             url: apiCall,
             contentType: "application/json; charset=utf-8",
@@ -117,7 +124,7 @@
         }
 
         if(source != target){
-            var apiUrl = 'http://localhost:8080/api/games/' + gameId + '/moves?start=' + source + '&end=' + target
+            var apiUrl = '/api/games/' + gameId + '/moves?start=' + source + '&end=' + target
             $.ajax({
                 url: apiUrl,
                 contentType: "application/json; charset=utf-8",
@@ -185,7 +192,7 @@
 
     function getGameStatus(){
         var gameId = $.cookie("curr_game_id");
-        var apiUrl = 'http://localhost:8080/api/games/' + gameId;
+        var apiUrl = '/api/games/' + gameId;
         $.ajax({
             url: apiUrl,
             contentType: "application/json; charset=utf-8",
@@ -223,9 +230,10 @@
         });
     }
 
+
     function makeEngineMove(){
         var gameId = $.cookie("curr_game_id");
-        var apiUrl = 'http://localhost:8080/api/games/' + gameId + '/moves';
+        var apiUrl = '/api/games/' + gameId + '/moves';
         $.ajax({
             url: apiUrl,
             contentType: "application/json; charset=utf-8",
