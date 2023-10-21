@@ -3,7 +3,9 @@ Chess engine written in Go
 
 The default for the program is to instantiate a web server on port 80 which servers the pages under the chess_web_page folder and
 implements the web service in the chess_web_service folder.  If a "-c" command line argument is passed in then it will 
-run the console interface for playing chess games from the command line.  The HTML GUI chess board is from https://chessboardjs.com/.
+run the console interface for playing chess games from the command line.  The HTML GUI chess board is from https://chessboardjs.com/.  
+
+The engine is up and running and can be tried out at http://www.chessengine.org.
 
 # Rest Web Service
 Provides an API for creating and playing chess games with the Go chess engine.
